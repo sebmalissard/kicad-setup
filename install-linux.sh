@@ -26,7 +26,7 @@ kicad-install()
         exit 1
     fi
     
-    sudo add-apt-repository --yes ppa:js-reynaud/kicad-5 &&
+    sudo add-apt-repository --yes ppa:kicad/kicad-5.1-releases &&
     sudo apt update &&
     sudo apt install --no-install-recommends kicad
     if [ "$?" != "0" ]; then
@@ -67,7 +67,7 @@ env-install()
         sed -i "s|KICAD_SYMBOL_DIR=.*|KICAD_SYMBOL_DIR=\"${INSTALL_DIR_ABS}/kicad-symbols\"|g" "${HOME}/.config/kicad/kicad_common"
     else
         mkdir -p "${HOME}/.config/kicad"
-	echo "[EnvironmentVariables]"                                 > "${HOME}/.config/kicad/kicad_common"
+        echo "[EnvironmentVariables]"                                 > "${HOME}/.config/kicad/kicad_common"
         echo "KISYSMOD=\"${INSTALL_DIR_ABS}/kicad-footprints\""      >> "${HOME}/.config/kicad/kicad_common"
         echo "KISYS3DMOD=\"${INSTALL_DIR_ABS}/kicad-packages3D\""    >> "${HOME}/.config/kicad/kicad_common"
         echo "KICAD_SYMBOL_DIR=\"${INSTALL_DIR_ABS}/kicad-symbols\"" >> "${HOME}/.config/kicad/kicad_common"
