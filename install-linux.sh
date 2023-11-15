@@ -12,6 +12,7 @@ help()
     echo "    -h|--help               : Print this help"
     echo "    -k|--kicad-install      : Install kicad EDA"
     echo "    -l|--libraries-install  : Install kicad libraries"
+    echo "    -p|--projets-install    : Install kicad projects"
 }
 
 kicad-install()
@@ -19,7 +20,12 @@ kicad-install()
     if lsb_release -i | grep -v Ubuntu; then
         echo "Only Ubuntu installation supported."
         exit 1
-    fi 
+    fi
+
+    if awk "BEGIN {exit !($(lsb_release -r | awk '{print $2}') > 21.10)}"; then
+        echo "Max Ubuntu version supported 21.10"
+        exit 1
+    fi
 
     if command -v kicad; then
         echo "Kicad is already installed. Abort!"
@@ -77,10 +83,22 @@ env-install()
     ln -s "${INSTALL_DIR_ABS}/kicad-symbols/sym-lib-table" "${HOME}/.config/kicad/sym-lib-table"
 }
 
+projects-install()
+{
+    if ! command -v git; then
+        echo "Need to install 'git':"
+        echo "    sudo apt install git"
+        exit 1
+    fi
+    
+    git clone https://github.com/sebmalissard/kicad-projects    "${INSTALL_DIR}/kicad-projects"
+}
+
 INSTALL_DIR=
 KICAD_INSTALL=
 LIBRARIES_INSTALL=
 ENV_INSTALL=
+PROJECTS_INSTALL=
             
 while [[ $# -gt 0 ]]; do
     val="${1}"
@@ -100,6 +118,7 @@ while [[ $# -gt 0 ]]; do
             KICAD_INSTALL=1
             LIBRARIES_INSTALL=1
             ENV_INSTALL=1
+            PROJECTS_INSTALL=1
             ;;
         
         -h|--help)
@@ -113,6 +132,10 @@ while [[ $# -gt 0 ]]; do
         
         -l|--libraries-install)
             LIBRARIES_INSTALL=1
+            ;;
+        
+        -p|--projets-install)
+            PROJECTS_INSTALL=1
             ;;
         
         *)
@@ -143,3 +166,4 @@ INSTALL_DIR_ABS="$(realpath ${INSTALL_DIR})"
 [ "${KICAD_INSTALL}" == "1" ]       && kicad-install
 [ "${LIBRARIES_INSTALL}" == "1" ]   && libraries-install
 [ "${ENV_INSTALL}" == "1" ]         && env-install
+[ "${PROJECTS_INSTALL}" == "1" ]    && projects-install
